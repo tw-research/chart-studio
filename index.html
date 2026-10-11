@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f3f2ee" />
+    <title>Chart Studio — Make charts from your data</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Chart Studio home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>chart<span class="brand-light"> studio</span></span>
+      </a>
+      <div class="top-actions">
+        <span class="save-state"><span class="save-dot"></span> Preview updates live</span>
+        <button id="exportSvg" class="button button-quiet" type="button">↓&nbsp; Export SVG</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="intro">
+        <div class="eyebrow"><span>CHART MAKER</span><span class="eyebrow-line"></span><span>FLEXIBLE DATA VISUALS</span></div>
+        <h1>Make your data<br /><em>take shape.</em></h1>
+        <p class="intro-copy">Shape a table into a clear chart. Start with the sample, edit the data, or paste a spreadsheet.</p>
+      </section>
+
+      <section class="chart-card" aria-label="Chart preview">
+        <div class="chart-head">
+          <div>
+            <div class="chart-kicker">CHART PREVIEW <span class="live-pill"><span></span> LIVE</span></div>
+            <h2 id="previewTitle">A little more room to create</h2>
+            <p id="previewSubtitle">Workshop feedback · 24 participants</p>
+          </div>
+          <button id="downloadPng" class="icon-button" type="button" title="Download chart as PNG" aria-label="Download chart as PNG">↗</button>
+        </div>
+        <div class="chart-type-bar"><label for="chartType">CHART TYPE</label><select id="chartType"><option value="likert">Diverging Likert</option><option value="bar">Horizontal bars</option><option value="stacked">Stacked bars</option><option value="column">Columns</option><option value="stacked-column">Stacked columns</option><option value="line">Line</option><option value="area">Area</option><option value="scatter">Scatter</option><option value="donut">Donut</option><option value="pie">Pie</option></select><span id="chartHint">Counts split around the scale midpoint.</span></div>
+        <div class="chart-wrap" id="chartWrap"><svg id="chart" role="img" aria-label="Diverging stacked response chart"></svg></div>
+        <div class="legend-wrap" id="legend"></div>
+        <div class="chart-foot"><span id="midpointNote"><span class="foot-rule"></span> Center marks the neutral midpoint</span><span id="responseTotal">— total</span></div>
+      </section>
+
+      <section class="editor-grid">
+        <div class="editor-main">
+          <div class="section-heading">
+            <div><span class="section-number">01</span><h2>Your data</h2></div>
+            <div class="editor-actions"><button id="addSeries" class="text-button" type="button">＋ &nbsp;Add series</button><button id="removeSeries" class="text-button" type="button">− &nbsp;Remove series</button><button id="addQuestion" class="text-button" type="button">＋ &nbsp;Add row</button><button id="resetSample" class="text-button" type="button">↺ &nbsp;Reset sample</button></div>
+          </div>
+          <div class="table-shell">
+            <table class="data-table">
+              <thead id="dataHead"></thead>
+              <tbody id="dataRows"></tbody>
+            </table>
+          </div>
+          <details class="paste-data"><summary>Paste a table from a spreadsheet</summary><p>Use the first row for series names and the first column for categories. Paste tab-separated cells or CSV.</p><textarea id="pasteInput" rows="5" placeholder="Category&#9;Series A&#9;Series B&#10;January&#9;12&#9;18"></textarea><button id="importData" class="button" type="button">Import table</button><span id="importStatus" role="status"></span></details>
+          <div id="scaleNote" class="table-note"><span class="note-star">✳</span> The midpoint response is split evenly across the center line.</div>
+        </div>
+
+        <aside class="settings-panel">
+          <div class="section-heading settings-heading"><div><span class="section-number">02</span><h2>Make it yours</h2></div></div>
+          <label class="field-label" for="chartTypeSetting">CHART TYPE</label>
+          <select id="chartTypeSetting" class="text-input"><option value="likert">Diverging Likert</option><option value="bar">Horizontal bars</option><option value="stacked">Stacked bars</option><option value="column">Columns</option><option value="stacked-column">Stacked columns</option><option value="line">Line</option><option value="area">Area</option><option value="scatter">Scatter</option><option value="donut">Donut</option><option value="pie">Pie</option></select>
+          <div id="scaleSettings" class="scale-settings">
+            <div class="setting-divider"></div><div class="scale-heading">RESPONSE SCALE</div>
+            <div class="scale-inputs"><label>From<input id="scaleMin" class="text-input" type="number" min="-50" max="50" value="1" /></label><label>To<input id="scaleMax" class="text-input" type="number" min="-50" max="50" value="7" /></label></div>
+            <label class="field-label" for="lowLabel">LOW-END LABEL</label><input id="lowLabel" class="text-input" value="Not at all" maxlength="36" />
+            <label class="field-label" for="highLabel">HIGH-END LABEL</label><input id="highLabel" class="text-input" value="Very much" maxlength="36" />
+          </div>
+          <div class="setting-row title-setting"><div><span class="setting-name">Show chart title</span><span class="setting-desc">Add a heading above the chart</span></div><label class="switch"><input id="showTitle" type="checkbox" /><span></span></label></div>
+          <label class="field-label" for="titleInput">CHART TITLE</label>
+          <input id="titleInput" class="text-input" value="A little more room to create" maxlength="90" disabled />
+          <div class="setting-row subtitle-setting"><div><span class="setting-name">Show subtitle</span><span class="setting-desc">Add a short description</span></div><label class="switch"><input id="showSubtitle" type="checkbox" /><span></span></label></div>
+          <label class="field-label" for="subtitleInput">SUBTITLE</label>
+          <input id="subtitleInput" class="text-input" value="Workshop feedback · 24 participants" maxlength="100" disabled />
+          <div class="setting-divider"></div>
+          <div class="setting-row"><div><span class="setting-name">Show response counts</span><span class="setting-desc">Total at the end of each row</span></div><label class="switch"><input id="showCounts" type="checkbox" checked /><span></span></label></div>
+          <div class="setting-row"><div><span class="setting-name">Use subtle grid</span><span class="setting-desc">Helps compare bar lengths</span></div><label class="switch"><input id="showGrid" type="checkbox" checked /><span></span></label></div>
+          <div class="setting-divider"></div>
+          <div id="paletteKey" class="palette-key"><span class="palette-dot agree"></span><span>Agreement scale</span><span class="palette-dot bipolar"></span><span>Bipolar scale</span></div>
+        </aside>
+      </section>
+      <footer class="page-footer"><span>CHART STUDIO</span><span>Thoughtful charts for thoughtful questions.</span><span>MADE FOR YOUR DATA&nbsp; ↗</span></footer>
+    </main>
+    <script defer src="./app.js"></script>
+  </body>
+</html>
