@@ -499,6 +499,7 @@ el('downloadPng').addEventListener('click', () => {
 // URL charts use the same renderer and SVG exporter as the editor.
 function loadUrlChart() {
   const params = new URLSearchParams(location.search);
+  document.body.classList.toggle('embed-mode', params.get('embed') === '1' || params.get('embed') === 'true');
   const encoded = params.get('chart');
   if (!encoded) { render(); return; }
   try {
