@@ -496,4 +496,50 @@ el('downloadPng').addEventListener('click', () => {
   image.src = url;
 });
 
-render();
+// URL charts use the same renderer and SVG exporter as the editor.
+function loadUrlChart() {
+  const params = new URLSearchParams(location.search);
+  const encoded = params.get('chart');
+  if (!encoded) { render(); return; }
+  try {
+    const spec = JSON.parse(encoded);
+    const types = Array.from(el('chartType').options, option => option.value);
+    if (!spec || !types.includes(spec.type) || !Array.isArray(spec.series) ||
+        spec.series.length < 1 || spec.series.length > 50 ||
+        !spec.series.every(name => typeof name === 'string') ||
+        !Array.isArray(spec.rows) || spec.rows.length < 1 || spec.rows.length > 500 ||
+        !spec.rows.every(row => row && typeof row.label === 'string' &&
+          Array.isArray(row.values) && row.values.length === spec.series.length &&
+          row.values.every(value => typeof value === 'number' && Number.isFinite(value)))) {
+      throw new Error('Provide a supported type, 1–50 series, and 1–500 labeled rows with matching finite numeric values.');
+    }
+    if (spec.type === 'likert' && (spec.series.length > 21 || spec.rows.some(row => row.values.some(value => value < 0 || !Number.isInteger(value))))) {
+      throw new Error('Likert charts require at most 21 series and nonnegative integer counts.');
+    }
+    rows = spec.rows.map(row => ({ label: row.label, group: row.group === 'bipolar' ? 'bipolar' : 'agreement', values: [...row.values] }));
+    seriesNames = [...spec.series];
+    el('chartType').value = spec.type;
+    el('chartTypeSetting').value = spec.type;
+    if (spec.type === 'likert') {
+      el('scaleMin').value = 1; el('scaleMax').value = seriesNames.length;
+      seriesNames = seriesNames.map((_, i) => String(i + 1));
+    }
+    for (const [key, id] of [['title', 'titleInput'], ['subtitle', 'subtitleInput'], ['lowLabel', 'lowLabel'], ['highLabel', 'highLabel']]) {
+      if (typeof spec[key] === 'string') el(id).value = spec[key];
+    }
+    el('showTitle').checked = Boolean(spec.title);
+    el('showSubtitle').checked = Boolean(spec.subtitle);
+    for (const key of ['showCounts', 'showGrid']) if (typeof spec[key] === 'boolean') el(key).checked = spec[key];
+    render();
+    if (params.get('format') === 'svg') el('exportSvg').click();
+    if (params.get('format') === 'png') el('downloadPng').click();
+  } catch (error) {
+    render();
+    const message = document.createElement('p');
+    message.setAttribute('role', 'alert');
+    message.textContent = `Unable to load URL chart: ${error.message}`;
+    document.body.prepend(message);
+  }
+}
+
+loadUrlChart();

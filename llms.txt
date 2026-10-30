@@ -1,0 +1,52 @@
+# Chart Studio
+
+> A standalone browser chart editor that turns tabular data into editable SVG or PNG charts.
+
+Chart Studio is a static site with no build step or package dependencies. Open `index.html` in a browser, or serve the folder with any static file server.
+
+## URL chart interface
+
+Load a chart into the editor by passing a URL-encoded JSON specification in the `chart` query parameter:
+
+```js
+const spec = {
+  type: "bar",
+  title: "Quarterly sales",
+  series: ["2025", "2026"],
+  rows: [
+    { label: "Q1", values: [12, 18] },
+    { label: "Q2", values: [16, 24] }
+  ]
+};
+const url = new URL("/index.html", "https://your-host.example");
+url.searchParams.set("chart", JSON.stringify(spec));
+```
+
+Open the resulting URL to load the chart into the editable interface. Add `format=svg` or `format=png` to download the rendered image automatically:
+
+```js
+url.searchParams.set("format", "svg");
+```
+
+Use `url.searchParams.set("format", "png")` for a PNG download.
+
+This is a browser URL interface. `format=svg` and `format=png` trigger client-side downloads after rendering; they are not HTTP endpoints that return an image to `curl` or an `<img>` tag.
+
+## Specification
+
+Required fields:
+
+- `type`: `likert`, `bar`, `stacked`, `column`, `stacked-column`, `line`, `area`, `scatter`, `donut`, or `pie`.
+- `series`: 1–50 series names.
+- `rows`: 1–500 objects. Each object has a string `label` and a `values` array with one finite number per series.
+
+Optional fields are `title`, `subtitle`, `lowLabel`, `highLabel`, `showCounts`, and `showGrid`. A supplied title or subtitle is shown automatically. Likert charts use numbered response points starting at 1, allow at most 21 series, and require nonnegative integer values. Likert rows may set `group` to `"bipolar"`; the default is `"agreement"`.
+
+## Files
+
+- `index.html` — editor shell.
+- `app.js` — chart rendering, URL loading, and SVG/PNG export.
+- `styles.css` — editor styling.
+- `README.md` — full usage guide.
+
+Keep chart URLs reasonably short and avoid placing confidential data in URLs, browser history, or shared links.
